@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -63,6 +66,19 @@ public class LessonController {
             this.repository.save(lesson);
 
         return new ResponseEntity<>(lesson, HttpStatus.OK);
+    }
+
+    @GetMapping("/find/{title}")
+    public Iterable<Lesson> getLessonByTitle(@PathVariable String title){
+        return this.repository.findByTitle(title);
+    }
+
+    @GetMapping("/between")
+    public  Iterable<Lesson> getLessonsBetweenDates(@RequestParam String date1, @RequestParam String date2) throws ParseException {
+        Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(date1);
+        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(date2);
+
+        return this.repository.findByDeliveredOnBetween(startDate, endDate);
     }
 
 }

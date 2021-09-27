@@ -74,12 +74,9 @@ class LessonControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
 
-        ResultActions result = this.mockMvc.perform(request);
-
-        result.andExpect(jsonPath("$.id").exists())
-              .andExpect(jsonPath("$.title", is("How to get rich 2")));
-
-        System.out.println(result.andDo(MockMvcResultHandlers.print()));
+        this.mockMvc.perform(request)
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.title", is("How to get rich 2")));
     }
 
     @Test
@@ -98,9 +95,24 @@ class LessonControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
 
-        ResultActions result = this.mockMvc.perform(request);
-
-        result.andExpect(jsonPath("$.id").exists())
+        this.mockMvc.perform(request)
+                .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.title", is("How to get poor")));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testGetLessonByTitle() throws Exception {
+        MockHttpServletRequestBuilder request = get("/lessons/find/How to get rich");
+        this.mockMvc.perform(request).andExpect(jsonPath("$[0].id").exists());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testGetLessonByDateRange() throws Exception {
+        MockHttpServletRequestBuilder request = get("/lessons/between?date1=2021-08-01&date2=2021-10-01");
+        this.mockMvc.perform(request).andExpect(jsonPath("$[0].id").exists());
     }
 }
